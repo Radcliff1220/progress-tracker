@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>进展填报系统</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>进展填报系统</h1>
+        <p>项目填报、科研进展、管理员确认与统计导出。</p>
+      </div>
+      <nav>
+        <button class="tab active" data-view="userView">用户端</button>
+        <button class="tab" data-view="adminView">管理员端</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="userView" class="view active">
+        <section class="panel compact">
+          <label>选择姓名</label>
+          <select id="currentUser"></select>
+        </section>
+
+        <div class="grid two">
+          <section class="panel">
+            <h2>项目进展填报</h2>
+            <form id="projectForm">
+              <label>项目</label>
+              <select id="projectSelect" required></select>
+              <label>任务/内容</label>
+              <select id="taskSelect" required></select>
+              <label>进度百分比</label>
+              <select id="projectProgress" required></select>
+              <label>细节汇报</label>
+              <input id="projectNote" required placeholder="请填写细节汇报">
+              <button type="submit">提交项目进展</button>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h2>科研进展填报</h2>
+            <form id="researchForm">
+              <label>大论文标题</label>
+              <input id="researchTitle" required placeholder="请输入标题">
+              <label>当前阶段</label>
+              <select id="researchStage" required>
+                <option>文献阶段</option>
+                <option>仿真阶段</option>
+                <option>撰写阶段</option>
+              </select>
+              <label>进度百分比</label>
+              <select id="researchProgress" required></select>
+              <label>细节汇报</label>
+              <input id="researchNote" required placeholder="请填写细节汇报">
+              <button type="submit">提交科研进展</button>
+            </form>
+          </section>
+        </div>
+
+        <section class="panel">
+          <h2>我的历史记录</h2>
+          <div class="grid two">
+            <div>
+              <h3>项目记录</h3>
+              <div class="table-wrap"><table id="myProjectHistory"></table></div>
+            </div>
+            <div>
+              <h3>科研记录</h3>
+              <div class="table-wrap"><table id="myResearchHistory"></table></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="adminView" class="view">
+        <section class="panel compact">
+          <h2>管理员登录</h2>
+          <div class="inline">
+            <input id="adminPassword" type="password" placeholder="管理员密码，初始 admin123">
+            <button id="adminLogin">进入后台</button>
+            <button id="exportExcel" disabled>导出 Excel</button>
+          </div>
+        </section>
+
+        <div id="adminContent" class="hidden">
+          <div class="admin-tabs">
+            <button class="admin-tab active" data-admin-section="projectAdminSection">项目进展</button>
+            <button class="admin-tab" data-admin-section="researchAdminSection">科研进展</button>
+            <button class="admin-tab" data-admin-section="manageAdminSection">基础管理</button>
+          </div>
+
+          <div id="projectAdminSection" class="admin-section active">
+            <section class="panel">
+              <h2>项目整体进度</h2>
+              <div id="adminProjectOverview" class="progress-list"></div>
+            </section>
+
+            <section class="panel">
+              <h2>项目文件夹</h2>
+              <div id="projectFolders" class="folder-grid"></div>
+              <div id="projectDetail" class="project-detail"></div>
+            </section>
+          </div>
+
+          <div id="researchAdminSection" class="admin-section">
+            <section class="panel">
+              <h2>科研进度</h2>
+              <div class="filter-row">
+                <label>人员</label>
+                <select id="researchUserFilter"></select>
+                <label>时间</label>
+                <select id="researchTimeFilter">
+                  <option value="all">全部</option>
+                  <option value="week">近一周</option>
+                  <option value="month">近一个月</option>
+                </select>
+              </div>
+              <h3>最新科研进度</h3>
+              <div class="table-wrap tall-table"><table id="researchStats"></table></div>
+              <h3>科研汇报历史</h3>
+              <div class="table-wrap tall-table"><table id="researchHistoryAdmin"></table></div>
+            </section>
+          </div>
+
+          <div id="manageAdminSection" class="admin-section">
+            <div class="grid two">
+              <section class="panel">
+                <h2>人员管理</h2>
+                <form id="userForm" class="inline">
+                  <input id="newUserName" placeholder="新增姓名">
+                  <button type="submit">添加</button>
+                </form>
+                <div id="userList" class="list"></div>
+              </section>
+
+              <section class="panel">
+                <h2>项目管理</h2>
+                <form id="projectAdminForm" class="inline">
+                  <input id="newProjectName" placeholder="新增项目">
+                  <button type="submit">添加</button>
+                </form>
+                <div id="projectList" class="list"></div>
+              </section>
+            </div>
+
+            <section class="panel">
+              <h2>任务管理</h2>
+              <form id="taskForm" class="task-form">
+                <label>所属项目</label>
+                <select id="newTaskProject"></select>
+                <label>任务名称</label>
+                <input id="newTaskName" placeholder="例如 任务4">
+                <label>工作量</label>
+                <input id="newTaskWorkload" type="number" min="0" step="0.1" value="10">
+                <button type="submit">添加任务</button>
+              </form>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
